@@ -3,6 +3,7 @@
 
 # Archivos de build del Backend
 /uptask_backend/dist
+/uptask_backend/package-lock.json
 
 # Variables de entorno
 /uptask_backend/.env
