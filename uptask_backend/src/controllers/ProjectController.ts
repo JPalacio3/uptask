@@ -9,12 +9,71 @@ export class ProjectController {
       await project.save();
       res.send("Proyecto creado correctamente");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   // Método para obtener todos los registros de la base de datos
   static getAllProjects = async (req: Request, res: Response) => {
-    res.send("Todos los proyectos");
+    try {
+      const projects = await Project.find({});
+      res.json(projects);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Método para obtener un proyecto por su Id
+  static getProjectById = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+      const project = await Project.findById(id);
+
+      if (!project) {
+        const error = new Error("Proyecto NO Encontrado");
+        return res.status(404).json({ error: error.message });
+      }
+
+      res.json(project);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Método para actualizar un proyecto por su const
+  static updatedProject = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+      const project = await Project.findByIdAndUpdate(id, req.body);
+
+      if (!project) {
+        const error = new Error("Proyecto NO Encontrado");
+        return res.status(404).json({ error: error.message });
+      }
+
+      await project.save();
+      res.send("Proyecto Actualizado Correctamente");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Método para eliminar un proyecto por su ID
+  static deleteProject = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+      const project = await Project.findById(id);
+      if (!project) {
+        const error = new Error("Error Al Eliminar");
+        return res.status(404).json({ error: error.message });
+      }
+
+      await project.deleteOne();
+      res.send("Proyecto Eliminado");
+    } catch (error) {
+      console.error(error);
+    }
   };
 }
