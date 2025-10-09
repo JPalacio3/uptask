@@ -7,6 +7,9 @@ dotenv.config();
 connectDB();
 const app = express();
 
+// Habilitar la lectura de formatos de archivos tipo JSON
+app.use(express.json());
+
 // app.use("/api/auth");
 app.use("/api/projects", projectRoutes);
 
