@@ -9,62 +9,97 @@ const router = Router();
 
 // Rutas para la creación de Proyectos
 router.post(
-  "/",
-  body("projectName")
-    .notEmpty()
-    .withMessage("El Nombre del Proyecto es Obligatorio"),
-  body("clientName")
-    .notEmpty()
-    .withMessage("El Nombre del Cliente es Obligatorio"),
-  body("description")
-    .notEmpty()
-    .withMessage("La Descripción del Proyecto es Obligatoria"),
+	"/",
+	body("projectName")
+		.notEmpty()
+		.withMessage("El Nombre del Proyecto es Obligatorio"),
+	body("clientName")
+		.notEmpty()
+		.withMessage("El Nombre del Cliente es Obligatorio"),
+	body("description")
+		.notEmpty()
+		.withMessage("La Descripción del Proyecto es Obligatoria"),
 
-  handleInputErrors,
-  ProjectController.createProject,
+	handleInputErrors,
+	ProjectController.createProject,
 );
 
 router.get("/", ProjectController.getAllProjects);
 
 router.get(
-  "/:id",
-  param("id").isMongoId().withMessage("ID NO Válido o Inexistente"),
+	"/:id",
+	param("id").isMongoId().withMessage("ID NO Válido o Inexistente"),
 
-  handleInputErrors,
-  ProjectController.getProjectById,
+	handleInputErrors,
+	ProjectController.getProjectById,
 );
 
 router.put(
-  "/:id",
-  body("projectName")
-    .notEmpty()
-    .withMessage("El Nombre del Proyecto es Obligatorio"),
-  body("clientName")
-    .notEmpty()
-    .withMessage("El Nombre del Cliente es Obligatorio"),
-  body("description")
-    .notEmpty()
-    .withMessage("La Descripción del Proyecto es Obligatoria"),
+	"/:id",
+	body("projectName")
+		.notEmpty()
+		.withMessage("El Nombre del Proyecto es Obligatorio"),
+	body("clientName")
+		.notEmpty()
+		.withMessage("El Nombre del Cliente es Obligatorio"),
+	body("description")
+		.notEmpty()
+		.withMessage("La Descripción del Proyecto es Obligatoria"),
 
-  param("id").isMongoId().withMessage("ID NO Válido o Inexistente"),
+	param("id").isMongoId().withMessage("ID NO Válido o Inexistente"),
 
-  handleInputErrors,
-  ProjectController.updatedProject,
+	handleInputErrors,
+	ProjectController.updatedProject,
 );
 
 router.delete(
-  "/:id",
-  param("id").isMongoId().withMessage("ID NO Válido o Inexistente"),
+	"/:id",
+	param("id").isMongoId().withMessage("ID NO Válido o Inexistente"),
 
-  handleInputErrors,
-  ProjectController.deleteProject,
+	handleInputErrors,
+	ProjectController.deleteProject,
 );
 
 // Rutas para la creación de Tareas
+router.param("projectId", validateProjectExist);
+
 router.post(
-  "/:projectId/task",
-  validateProjectExist,
-  TaskController.createTask,
+	"/:projectId/task",
+
+	body("name").notEmpty().withMessage("El Nombre de la Tarea es Obligatorio"),
+	body("description")
+		.notEmpty()
+		.withMessage("La Descripción de la Tarea es Obligatoria"),
+	handleInputErrors,
+	TaskController.createTask,
+);
+
+router.get("/:projectId/tasks", TaskController.getProjectsTasks);
+
+router.get(
+	"/:projectId/tasks/:taskId",
+	param("taskId").isMongoId().withMessage("ID NO Válido o Inexistente"),
+	handleInputErrors,
+	TaskController.getTaskById,
+);
+
+router.put(
+	"/:projectId/tasks/:taskId",
+	param("taskId").isMongoId().withMessage("ID NO Válido o Inexistente"),
+	body("name").notEmpty().withMessage("El Nombre de la Tarea es Obligatorio"),
+	body("description")
+		.notEmpty()
+		.withMessage("La Descripción de la Tarea es Obligatoria"),
+
+	handleInputErrors,
+	TaskController.updateTask,
+);
+
+router.delete(
+	"/:projectId/tasks/:taskId",
+	param("taskId").isMongoId().withMessage("ID NO Válido o Inexistente"),
+	handleInputErrors,
+	TaskController.deleteTask,
 );
 
 export default router;
