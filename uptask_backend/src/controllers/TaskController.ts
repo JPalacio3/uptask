@@ -28,14 +28,11 @@ export class TaskController {
 
 	static getTaskById = async (req: Request, res: Response) => {
 		try {
-			const { taskId } = req.params;
-			const task = await Task.findById(taskId);
-
-			if (!task || task.project.toString() !== req.project.id) {
-				const error = new Error("Tarea NO Encontrada");
+			if (req.task.project.toString() !== req.project.id.toString()) {
+				const error = new Error("Acción NO Válida");
 				return res.status(404).json({ error: error.message });
 			}
-			res.json(task);
+			res.json(req.task);
 		} catch (error: unknown) {
 			res.status(500).json({ error: "Hubo un error al obtener las Tareas" });
 		}
@@ -43,22 +40,14 @@ export class TaskController {
 
 	static updateTask = async (req: Request, res: Response) => {
 		try {
-			const { taskId } = req.params;
-			const task = await Task.findById(taskId);
-
-			if (!task) {
-				const error = new Error("Tarea NO Encontrada");
-				return res.status(404).json({ error: error.message });
-			}
-
-			if (task.project.toString() !== req.project.id) {
+			if (req.task.project.toString() !== req.project.id.toString()) {
 				const error = new Error("Acción no válida");
 				return res.status(403).json({ error: error.message });
 			}
 
 			// Si la validación pasa, actualizamos y guardamos
-			Object.assign(task, req.body);
-			await task.save();
+			Object.assign(req.task, req.body);
+			await req.task.save();
 			res.send("Tarea Actualizada Correctamente");
 		} catch (error: unknown) {
 			res.status(500).json({ error: "Hubo un error al Realizar la solicitud" });
@@ -67,23 +56,15 @@ export class TaskController {
 
 	static deleteTask = async (req: Request, res: Response) => {
 		try {
-			const { taskId } = req.params;
-			const task = await Task.findById(taskId);
-
-			if (!task) {
-				const error = new Error("Tarea NO Encontrada");
-				return res.status(404).json({ error: error.message });
-			}
-
-			if (task.project.toString() !== req.project.id) {
+			if (req.task.project.toString() !== req.project.id.toString()) {
 				const error = new Error("Acción no válida");
 				return res.status(403).json({ error: error.message });
 			}
 
 			req.project.tasks = req.project.tasks.filter(
-				(task) => task.toString() !== taskId,
+				(task) => req.task.toString() !== req.task.id.toString(),
 			);
-			await Promise.allSettled([task.deleteOne(), req.project.save()]);
+			await Promise.allSettled([req.task.deleteOne(), req.project.save()]);
 
 			res.send("Tarea Eliminada Correctamente");
 		} catch (error: unknown) {
@@ -93,22 +74,15 @@ export class TaskController {
 
 	static updateStatus = async (req: Request, res: Response) => {
 		try {
-			const { taskId } = req.params;
 			const { status } = req.body;
-			const task = await Task.findById(taskId);
 
-			if (!task) {
-				const error = new Error("Tarea NO Encontrada");
-				return res.status(404).json({ error: error.message });
-			}
-
-			if (task.project.toString() !== req.project.id) {
+			if (req.task.project.toString() !== req.project.id.toString()) {
 				const error = new Error("Acción no válida");
 				return res.status(403).json({ error: error.message });
 			}
 
-			task.status = status;
-			await task.save();
+			req.task.status = status;
+			await req.task.save();
 
 			res.send("Tarea Actualizada Correctamente");
 		} catch (error: unknown) {

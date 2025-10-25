@@ -1,28 +1,28 @@
 import type { Request, Response, NextFunction } from "express";
-import Project, { IProject } from "../models/Project";
+import Task, { ITask } from "../models/Task";
 
 declare global {
 	namespace Express {
 		interface Request {
-			project: IProject;
+			task: ITask;
 		}
 	}
 }
 
-export async function projectExists(
+export async function taskExists(
 	req: Request,
 	res: Response,
 	next: NextFunction,
 ) {
 	try {
-		const { projectId } = req.params;
-		const project = await Project.findById(projectId);
+		const { taskId } = req.params;
+		const task = await Task.findById(taskId);
 
-		if (!project) {
-			const error = new Error("Proyecto NO Encontrado");
+		if (!task) {
+			const error = new Error("Tarea NO Encontrada");
 			return res.status(404).json({ error: error.message });
 		}
-		req.project = project;
+		req.task = task;
 		next();
 	} catch (error: unknown) {
 		res.status(500).json({ error: "Hubo un Error" });
